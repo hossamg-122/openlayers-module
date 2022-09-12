@@ -26,6 +26,7 @@ export default {
       iconFeature: null,
       coordinates: [45.0792, 23.8859], // sa city center
       marketPosition: [45.0792, 23.8859], // sa city center
+      overlay: null,
       zoom: 4.5,
 
       location: "",
@@ -68,7 +69,7 @@ export default {
     const popup = this.$refs["popup"];
     const closer = this.$refs["popup-closer"];
 
-    const overlay = new Overlay({
+    this.overlay = new Overlay({
       element: popup,
       autoPan: {
         animation: {
@@ -76,11 +77,12 @@ export default {
         },
       },
     });
-    closer.onclick = function () {
-      overlay.setPosition(undefined);
-      closer.blur();
-      return false;
-    };
+    // closer.onclick = function (e) {
+    //   console.log("test", e.preventDefault());
+    //   overlay.setPosition(undefined);
+    //   closer.blur();
+    //   return false;
+    // };
 
     // this is where we create the OpenLayers map
     const baseLayer = new TileLayer({
@@ -91,7 +93,7 @@ export default {
       // the map will be created using the 'map-root' ref
       target,
       layers: [baseLayer, markerLayer, warehousesLayer],
-      overlays: [overlay],
+      overlays: [this.overlay],
       // the map view will initially show the whole world
       view: new View({
         zoom: this.zoom,
@@ -111,7 +113,7 @@ export default {
 
           this.location = `${values_.geopoint[1]} , ${values_.geopoint[0]}`;
           this.warehouse = values_.accentcity;
-          overlay.setPosition(
+          this.overlay.setPosition(
             fromLonLat([values_.geopoint[1], values_.geopoint[0]])
           );
         }
@@ -160,6 +162,9 @@ export default {
     changeMarkerLocation() {
       this.address = toLonLat(this.iconFeature.getGeometry().flatCoordinates);
     },
+    closePopup() {
+      this.overlay.setPosition(undefined);
+    },
   },
 };
 </script>
@@ -170,7 +175,13 @@ export default {
     </div>
     <div ref="map-root" style="width: 100%; height: 500px"></div>
     <div ref="popup" class="ol-popup">
-      <a href="#" ref="popup-closer" class="ol-popup-closer"></a>
+      <v-icon
+        style="position: absolute; top: 5px; right: 5px; z-index: 99999"
+        ref="popup-closer"
+        @click.prevent="closePopup"
+        >mdi-close-box-outline</v-icon
+      >
+
       <div id="popup-content">
         <div class="flex p-5 font-standard w-full">
           <div class="align-self-start">

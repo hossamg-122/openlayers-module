@@ -1,0 +1,17 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  h1 {
+    @apply text-2xl;
+    @apply font-heading;
+    @apply font-semibold;
+  }
+  h2 {
+    @apply text-lg;
+    @apply font-standard;
+    @apply font-semibold;
+  }
+  /* ... */
+}
